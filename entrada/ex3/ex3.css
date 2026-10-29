@@ -1,0 +1,18 @@
+/* Crie uma lista com marcadores personalizados e uma cor de fundo 
+diferente para itens em posições pares e ímpares */
+
+.alternada{
+    list-style: upper-roman;
+    font-size: 40px;
+    color: indigo;
+    width: fit-content;
+    background-color: khaki;
+}
+
+.alternada li:nth-child(odd){
+    background-color: aqua;
+}
+
+.alternada li:nth-child(even){
+    background-color: blue;
+}

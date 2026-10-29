@@ -1,0 +1,31 @@
+/* Faça uma página na qual existam quadrados de cores distintas 
+ocupando os quatro cantos da tela com um texto dentro */
+
+.quadrado {
+    border: 3px solid ;
+    width: 100px;
+    height: 100px;
+    padding: 2px;
+    margin: 10px;
+    background-color: antiquewhite;
+}
+
+.quadrado2 {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    background-color: green;
+}
+
+.quadrado3 {
+    position: absolute;
+    bottom: 0;
+    background-color: brown;
+}
+
+.quadrado4 {
+    position: absolute;
+    right: 0;
+    top: 0px;
+    background-color: aqua;
+}

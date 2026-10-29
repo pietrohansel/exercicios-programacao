@@ -1,0 +1,15 @@
+/* Crie uma imagem com um link que tenha comportamentos 
+diferentes quando selecionado e quando o cursor está sobre a imagem */
+
+.imagem{
+    background: url("https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Ftse4.mm.bing.net%2Fth%2Fid%2FOIP.MCdyh7vPMWH_gtEBJ1uiKQHaEK%3Fr%3D0%26pid%3DApi&sp=1782840232T0766d536558f91edfd726bc12745df18f041750ad51313cd0457b37945cd74b2") no-repeat;
+    width: 200px;
+    height: 200px;
+    display: block;
+    background-size: contain;
+
+}
+
+.imagem:hover{
+    background-position: 50px 50px;
+}
