@@ -2,7 +2,6 @@
 from pathlib import Path
 import re
 import shutil
-import sys
 
 RAIZ = Path(__file__).resolve().parent.parent
 ENTRADA = RAIZ / "entrada"
@@ -17,7 +16,6 @@ EXTENSOES = {
     ".html": "html-css-js",
     ".htm": "html-css-js",
     ".css": "html-css-js",
-    ".java": "java",
     ".c": "c",
     ".h": "c",
     ".cpp": "cpp",
@@ -76,8 +74,10 @@ def proximo_numero(pasta):
 
 def main():
     if not ENTRADA.exists():
-        print("A pasta entrada/ não existe.")
-        sys.exit(1)
+        # O Git não versiona pastas vazias: num clone limpo a pasta pode não
+        # existir, mesmo existindo na máquina local. Isso não é um erro.
+        print("A pasta entrada/ não existe. Nada para organizar.")
+        return
 
     exercicios = sorted(
         item for item in ENTRADA.iterdir()
