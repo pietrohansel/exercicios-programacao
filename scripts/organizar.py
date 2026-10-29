@@ -34,12 +34,19 @@ EXTENSOES = {
 }
 
 
-def detectar_linguagem(pasta):
+def arquivos_de(exercicio):
+    """Lista os arquivos de código de uma pasta ou de um arquivo solto."""
+    if exercicio.is_file():
+        return [exercicio]
+
+    return [arquivo for arquivo in exercicio.rglob("*") if arquivo.is_file()]
+
+
+def detectar_linguagem(exercicio):
     extensoes = {
         arquivo.suffix.lower()
-        for arquivo in pasta.rglob("*")
-        if arquivo.is_file()
-        and arquivo.suffix.lower() in EXTENSOES
+        for arquivo in arquivos_de(exercicio)
+        if arquivo.suffix.lower() in EXTENSOES
     }
 
     linguagens = {EXTENSOES[e] for e in extensoes}
@@ -52,7 +59,7 @@ def detectar_linguagem(pasta):
 
     if len(linguagens) != 1:
         raise ValueError(
-            f"{pasta.name}: não foi possível identificar "
+            f"{exercicio.name}: não foi possível identificar "
             f"uma única linguagem. Encontradas: {sorted(linguagens)}"
         )
 
@@ -72,24 +79,29 @@ def proximo_numero(pasta):
     return max(numeros, default=0) + 1
 
 
-def main():
-    if not ENTRADA.exists():
-        # O Git não versiona pastas vazias: num clone limpo a pasta pode não
-        # existir, mesmo existindo na máquina local. Isso não é um erro.
-        print("A pasta entrada/ não existe. Nada para organizar.")
-        return
+def exercicios_de_entrada():
+    """Cada subpasta é um exercício; arquivos soltos de código também.
 
-    exercicios = sorted(
-        item for item in ENTRADA.iterdir()
-        if item.is_dir() and not item.is_symlink()
-    )
+    Arquivos soltos sem extensão reconhecida (ex.: .gitkeep) são ignorados.
+    """
+    itens = []
 
-    if not exercicios:
-        print("Nenhum exercício novo encontrado.")
-        return
+    for item in ENTRADA.iterdir():
+        if item.is_symlink() or item.name.startswith("."):
+            continue
 
-    # Validar todos antes de mover qualquer pasta.
+        if item.is_dir():
+            itens.append(item)
+        elif item.suffix.lower() in EXTENSOES:
+            itens.append(item)
+
+    return sorted(itens, key=lambda item: item.name)
+
+
+def montar_planos(exercicios):
+    """Valida todos os exercícios antes de mover qualquer um."""
     planos = []
+
     for exercicio in exercicios:
         linguagem = detectar_linguagem(exercicio)
         destino_pai = RAIZ / linguagem
@@ -106,13 +118,46 @@ def main():
         destino = destino_pai / f"ex{numero:03d}"
 
         if destino.exists():
-            raise FileExistsError(f"Destino já existe: {destino}")
+            raise FileExistsError(f"destino já existe: {destino}")
 
         planos.append((exercicio, destino_pai, numero, destino))
 
+    return planos
+
+
+def main():
+    if not ENTRADA.exists():
+        # O Git não versiona pastas vazias: num clone limpo a pasta pode não
+        # existir, mesmo existindo na máquina local. Isso não é um erro.
+        print("A pasta entrada/ não existe. Nada para organizar.")
+        return
+
+    exercicios = exercicios_de_entrada()
+
+    if not exercicios:
+        print("Nenhum exercício novo encontrado.")
+        return
+
+    try:
+        planos = montar_planos(exercicios)
+    except (ValueError, FileExistsError) as erro:
+        print(f"ERRO: {erro}")
+        print(
+            "Cada exercício deve ser uma pasta (ou um arquivo solto) com "
+            "código de uma única linguagem. Nada foi movido."
+        )
+        raise SystemExit(1)
+
     for origem, destino_pai, numero, destino in planos:
         destino_pai.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(origem), str(destino))
+
+        if origem.is_dir():
+            shutil.move(str(origem), str(destino))
+        else:
+            # Arquivo solto: vira uma pasta exNNN com o arquivo dentro.
+            destino.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(origem), str(destino / origem.name))
+
         print(f"{origem.name} -> {destino.relative_to(RAIZ)}")
 
 
