@@ -1,0 +1,67 @@
+<!--
+1 - Desenvolva uma página com um formulário de cadastro (o tema fica à sua escolha) que contenha todos os elementos de formulário apresentados (radio, select, checkbox, text, date, email, textarea, submit). 
+Utilize os atributos: method="get" action="teste.jsp"
+-->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    
+    <h1>Pedidos Pizza</h1>    
+
+    <form 
+    
+    method="GET" action="teste.jsp">
+
+    Nome:    <input type="text" name="nome" > 
+    <br>
+
+    Email:   <input type="email" name="email"> 
+
+    <br>
+
+    Tamanho: <input type="radio" name="tamanho" value="g"> Grande
+             <input type="radio" name="tamanho" value="m"> Média
+             <input type="radio" name="tamanho" value="p"> Pequena
+
+    <br>
+
+    Sabor:   <select name="sabor">
+            
+            <option>Calabresa</option>
+            <option>Napolitana</option>
+            <option>Marguerita</option>
+
+            </select>
+
+    <br>
+
+    Adicionais: 
+        
+            <input type="checkbox" name="borda" values="sim"> Borda
+            <input type="checkbox" name="queijo" values="sim"> Queijo extra
+
+    <br>
+
+    Data de Entrega: <input type="date" name="dataEntrega">
+
+    <br>
+
+    Observações: <textarea name="observação" rows="10" cols="30"></textarea>
+    
+    <br>
+
+    <input type="submit">
+
+    </form>
+
+</body>
+
+</html>

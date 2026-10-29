@@ -1,0 +1,68 @@
+<!-- 
+2 - Crie uma tabela com três linhas. A primeira deve possuir três colunas; a segunda; duas; e a terceira; apenas uma.
+
+Desafio: gfaça uma tabela ficar no seguinte formato utilizando o atributo colspan:
+
++--------------------------------+
+|                                |
++--------------+-----------------+
+|              |                 |
+|              |                 |
++--------------+-----------------+
+|         |          |           |
+|         |          |           | 
++---------+----------+-----------+
+
+
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table border="1">
+        
+        <caption>Economia Mensal</caption>
+        <tr>
+            <th>Mês</th>
+            <th>Valor</th>
+        </tr>
+
+        <tr>
+            <td>Janeiro</td>
+            <td>R$100</td>
+        </tr>
+
+    </table>
+
+<br>
+
+    <table border="1">
+
+        <tr>
+            <td colspan="30">&nbsp;&nbsp;&nbsp;&nbsp;</td>   
+        </tr>
+
+        <tr>
+            <th colspan="15">&nbsp;&nbsp;&nbsp;</th>
+
+            <th colspan="15">&nbsp;&nbsp;&nbsp;</th>
+        </tr>
+
+        <tr>
+            <th colspan="10">&nbsp;&nbsp;&nbsp;</th>
+            <th colspan="10">&nbsp;&nbsp;&nbsp;</th>
+            <th colspan="10">&nbsp;&nbsp;&nbsp;</th>
+        </tr>
+
+    </table>
+</body>
+
+</html>
