@@ -17,6 +17,16 @@ public class Caneta {
     }
 
 
+    public double getPonta(){
+        return this.ponta;
+    }
+
+
+    public void setPonta(double ponta){
+        this.ponta = ponta;
+    }
+
+
     public void rabiscar(){
         if (this.tampada == true){
             System.out.println("Não posso rabiscar");

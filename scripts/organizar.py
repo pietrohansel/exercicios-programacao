@@ -31,6 +31,8 @@ EXTENSOES = {
     ".kt": "kotlin",
     ".swift": "swift",
     ".sql": "sql",
+    ".asm": "assembly",
+    ".s": "assembly",
 }
 
 
@@ -91,7 +93,12 @@ def exercicios_de_entrada():
             continue
 
         if item.is_dir():
-            itens.append(item)
+            arquivos = [arquivo for arquivo in item.rglob("*") if arquivo.is_file()]
+
+            # Pastas com apenas binários/artefatos sem extensão (ex.: main
+            # compilado) não são exercícios e não devem travar a organização.
+            if any(arquivo.suffix for arquivo in arquivos):
+                itens.append(item)
         elif item.suffix.lower() in EXTENSOES:
             itens.append(item)
 

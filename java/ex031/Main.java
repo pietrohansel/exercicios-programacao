@@ -1,5 +1,5 @@
 
-public class main {
+public class Main {
 
     static void soma (int a, int b){
         int s = a + b;

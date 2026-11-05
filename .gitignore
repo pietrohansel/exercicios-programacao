@@ -1,6 +1,8 @@
 # Executáveis compilados em C (ficam ao lado do código-fonte)
 entrada/ex*/main
 entrada/ex*/Main
+c/ex*/main
+c/ex*/Main
 
 # Java
 *.class
@@ -8,8 +10,42 @@ entrada/ex*/Main
 # Python
 __pycache__/
 *.py[cod]
+venv/
+.venv/
+*.egg-info/
 
-# Outros artefatos de compilação
+# Node
+node_modules/
+
+# Builds e artefatos de compilação
+build/
+dist/
+target/
+bin/
+obj/
 *.o
 *.out
 a.out
+*.exe
+*.dll
+*.so
+*.so.*
+*.dylib
+*.log
+
+# IDEs e sistema operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Arquivos temporários
+*.tmp
+*.swp
+*~

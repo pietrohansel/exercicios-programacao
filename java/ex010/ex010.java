@@ -1,4 +1,4 @@
-﻿public class ex010 {
+public class ex010 {
     public static void main(String[] args) {
 
         double a = 23.0;

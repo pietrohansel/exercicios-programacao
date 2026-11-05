@@ -1,0 +1,66 @@
+name: Validar exercicios
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validar Python
+        run: python -m compileall -q python scripts
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Validar Java
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/classes"
+
+          while IFS= read -r dir; do
+            echo "::group::javac $dir"
+            javac -d "$RUNNER_TEMP/classes" "$dir"/*.java
+            echo "::endgroup::"
+          done < <(find java -name '*.java' -printf '%h\n' | sort -u)
+
+      - name: Validar C
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r arquivo; do
+            echo "::group::gcc $arquivo"
+            gcc -fsyntax-only "$arquivo"
+            echo "::endgroup::"
+          done < <(find c -name '*.c' | sort)
+
+      - name: Validar Assembly
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r arquivo; do
+            echo "::group::as $arquivo"
+            as -o "$RUNNER_TEMP/$(basename "$arquivo").o" "$arquivo"
+            echo "::endgroup::"
+          done < <(find assembly -name '*.asm' | sort)
