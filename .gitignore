@@ -1,0 +1,15 @@
+# Executáveis compilados em C (ficam ao lado do código-fonte)
+entrada/ex*/main
+entrada/ex*/Main
+
+# Java
+*.class
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Outros artefatos de compilação
+*.o
+*.out
+a.out
