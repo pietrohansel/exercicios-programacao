@@ -30,10 +30,16 @@ jobs:
           python-version: "3.x"
 
       - name: Organizar exercicios
-        run: python scripts/organizar.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/organizar.py | tee "$RUNNER_TEMP/organizar.log"
 
       - name: Registrar alteracoes
+        shell: bash
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -41,7 +47,15 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "Nenhuma alteracao para registrar."
-          else
-            git commit -m "Organiza novos exercicios automaticamente"
-            git push
+            exit 0
           fi
+
+          resumo=$(grep ' -> ' "$RUNNER_TEMP/organizar.log" | sed 's/^/- /' || true)
+
+          if [ -n "$resumo" ]; then
+            git commit -m "chore: organiza novos exercicios" -m "$resumo"
+          else
+            git commit -m "chore: organiza novos exercicios"
+          fi
+
+          git push

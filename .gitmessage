@@ -1,0 +1,22 @@
+# <tipo>(<escopo opcional>): <descrição curta>
+#
+# Tipos aceitos:
+#   feat     nova funcionalidade ou exercício
+#   fix      correção de bug
+#   docs     documentação
+#   style    formatação, sem mudança de lógica
+#   refactor reorganização de código
+#   perf     melhoria de desempenho
+#   test     testes
+#   build    build ou dependências
+#   ci       configuração de CI
+#   chore    tarefas gerais (gitignore, organização, etc.)
+#   revert   reversão de commit
+#
+# Exemplos:
+#   feat: adiciona exercício de calculadora
+#   fix: corrige leitura de entrada do exercício 12
+#   chore: atualiza .gitignore
+#
+# Corpo (opcional): explique o que mudou e por quê.
+# Linhas começando com # são ignoradas.

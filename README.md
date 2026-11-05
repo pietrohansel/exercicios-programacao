@@ -125,13 +125,40 @@ virtuais, `node_modules`, pastas de build e arquivos de IDE/sistema.
 
 ## Padrão de commits
 
-Mensagens descritivas ajudam a entender o histórico:
+O repositório usa o formato **Conventional Commits**:
+
+```text
+<tipo>: <descrição curta>
+```
+
+Tipos aceitos: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
+`build`, `ci`, `chore` e `revert`.
+
+Exemplos:
 
 ```bash
 git commit -m "feat: adiciona exercício de calculadora"
 git commit -m "fix: corrige leitura de entrada do exercício 12"
 git commit -m "chore: atualiza .gitignore"
 ```
+
+### Template e validação no seu clone
+
+O repositório inclui um template em `.gitmessage` e um hook de validação em
+`.githooks/commit-msg`. Ative-os uma vez em cada clone:
+
+```bash
+git config commit.template .gitmessage
+git config core.hooksPath .githooks
+```
+
+Depois disso:
+
+- `git commit` sem `-m` abre o editor já com o template;
+- mensagens fora do padrão são recusadas;
+- o assunto deve ter no máximo 72 caracteres.
+
+Para ignorar a validação em uma emergência, use `git commit --no-verify`.
 
 ## Licença
 

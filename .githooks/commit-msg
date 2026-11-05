@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""Valida a mensagem de commit no padrão Conventional Commits."""
+
+from pathlib import Path
+import re
+import sys
+
+PADRAO = re.compile(
+    r"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)"
+    r"(\([a-z0-9._/-]+\))?!?: .+$"
+)
+IGNORAR = ("Merge ", "Revert ", "fixup! ", "squash! ")
+LIMITE_ASSUNTO = 72
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Uso: commit-msg <arquivo>", file=sys.stderr)
+        return 1
+
+    linhas = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+    assunto = next(
+        (
+            linha.strip()
+            for linha in linhas
+            if linha.strip() and not linha.startswith("#")
+        ),
+        "",
+    )
+
+    # Commits gerados pelo Git (merge, revert, fixup, squash) são aceitos.
+    if assunto.startswith(IGNORAR):
+        return 0
+
+    if not PADRAO.match(assunto):
+        print(
+            "\nMensagem de commit inválida.\n"
+            "\nUse o formato: <tipo>: <descrição>\n"
+            "Tipos: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert\n"
+            "\nExemplos:\n"
+            "  feat: adiciona exercício de calculadora\n"
+            "  fix: corrige leitura de entrada do exercício 12\n"
+            "  chore: atualiza .gitignore\n",
+            file=sys.stderr,
+        )
+        return 1
+
+    if len(assunto) > LIMITE_ASSUNTO:
+        print(
+            f"\nO assunto do commit tem {len(assunto)} caracteres; "
+            f"o limite é {LIMITE_ASSUNTO}.\n"
+            "Resuma a descrição ou detalhe o restante no corpo do commit.\n",
+            file=sys.stderr,
+        )
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
