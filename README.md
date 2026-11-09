@@ -49,8 +49,15 @@ git pull
 
 ### Regras
 
-- Cada exercício deve ter código de **uma única linguagem**. HTML, CSS e JS
-  contam como uma linguagem só (`html-css-js`).
+- Cada exercício deve ter código de **uma única linguagem**.
+- **JavaScript sozinho vai para `javascript/`.** Só vai para `html-css-js/`
+  quando o exercício tem HTML ou CSS junto (ex.: `index.html` + `app.js`),
+  porque aí é uma página web e o JS faz parte dela.
+
+  ```
+  entrada/ex2/ex2.js                 -> javascript/ex001/ex2.js
+  entrada/ex1/ (ex1.html + ex1.js)   -> html-css-js/ex001/
+  ```
 - A pasta é renomeada automaticamente para `ex001`, `ex002`, ... na ordem
   alfabética dos nomes. Os nomes dos arquivos dentro dela são preservados.
 - Arquivos e pastas que começam com `.` são ignorados.
