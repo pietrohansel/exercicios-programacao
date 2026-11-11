@@ -5,6 +5,7 @@ import shutil
 
 RAIZ = Path(__file__).resolve().parent.parent
 ENTRADA = RAIZ / "entrada"
+LINGUAGENS = RAIZ / "linguagens"
 
 # Extensões que identificam cada linguagem
 EXTENSOES = {
@@ -111,7 +112,7 @@ def montar_planos(exercicios):
 
     for exercicio in exercicios:
         linguagem = detectar_linguagem(exercicio)
-        destino_pai = RAIZ / linguagem
+        destino_pai = LINGUAGENS / linguagem
         numero = proximo_numero(destino_pai)
 
         # Reservar números também entre exercícios deste lote.

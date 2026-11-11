@@ -7,7 +7,7 @@ Repositório com exercícios de programação para praticar lógica e desenvolve
 | Pasta | Conteúdo |
 | --- | --- |
 | `entrada/` | Área de envio. A GitHub Action move os exercícios daqui para a pasta da linguagem correta. |
-| `python/`, `java/`, `c/`, ... | Exercícios organizados por linguagem e numerados (`ex001`, `ex002`, ...). |
+| `linguagens/` | Pasta única com uma subpasta por linguagem (`python/`, `java/`, `c/`, ...), cada uma com os exercícios numerados (`ex001`, `ex002`, ...). |
 | `scripts/organizar.py` | Script usado pela Action e para organizar os exercícios localmente. |
 | `.github/workflows/` | Actions de organização e de validação do código. |
 
@@ -40,8 +40,8 @@ git commit -m "feat: exercicio calculadora"
 git push
 ```
 
-Em alguns segundos o bot move tudo para `python/ex001/`, `java/ex001/`, etc.
-Para receber o resultado na sua máquina:
+Em alguns segundos o bot move tudo para `linguagens/python/ex001/`,
+`linguagens/java/ex001/`, etc. Para receber o resultado na sua máquina:
 
 ```bash
 git pull
@@ -50,13 +50,13 @@ git pull
 ### Regras
 
 - Cada exercício deve ter código de **uma única linguagem**.
-- **JavaScript sozinho vai para `javascript/`.** Só vai para `html-css-js/`
+- **JavaScript sozinho vai para `linguagens/javascript/`.** Só vai para `linguagens/html-css-js/`
   quando o exercício tem HTML ou CSS junto (ex.: `index.html` + `app.js`),
   porque aí é uma página web e o JS faz parte dela.
 
   ```
-  entrada/ex2/ex2.js                 -> javascript/ex001/ex2.js
-  entrada/ex1/ (ex1.html + ex1.js)   -> html-css-js/ex001/
+  entrada/ex2/ex2.js                 -> linguagens/javascript/ex001/ex2.js
+  entrada/ex1/ (ex1.html + ex1.js)   -> linguagens/html-css-js/ex001/
   ```
 - A pasta é renomeada automaticamente para `ex001`, `ex002`, ... na ordem
   alfabética dos nomes. Os nomes dos arquivos dentro dela são preservados.
@@ -85,22 +85,22 @@ Exemplos:
 
 ```bash
 # Python
-python3 python/ex001/127.py
+python3 linguagens/python/ex001/127.py
 
 # Java com package (confira o package no arquivo)
-javac -d /tmp/classes java/ex001/ex001.java
+javac -d /tmp/classes linguagens/java/ex001/ex001.java
 java -cp /tmp/classes ex001.ex001
 
 # Java sem package
-javac -d /tmp/classes java/ex031/Main.java
+javac -d /tmp/classes linguagens/java/ex031/Main.java
 java -cp /tmp/classes Main
 
 # C (compile fora da árvore para não versionar o binário)
-gcc c/ex001/main.c -o /tmp/main
+gcc linguagens/c/ex001/main.c -o /tmp/main
 /tmp/main
 
 # Assembly
-as -o /tmp/main.o assembly/ex001/main.asm
+as -o /tmp/main.o linguagens/assembly/ex001/main.asm
 ld -o /tmp/main /tmp/main.o
 /tmp/main
 ```

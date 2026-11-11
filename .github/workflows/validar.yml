@@ -23,7 +23,7 @@ jobs:
           python-version: "3.x"
 
       - name: Validar Python
-        run: python -m compileall -q python scripts
+        run: python -m compileall -q linguagens/python scripts
 
       - name: Configurar Java
         uses: actions/setup-java@v4
@@ -41,7 +41,7 @@ jobs:
             echo "::group::javac $dir"
             javac -d "$RUNNER_TEMP/classes" "$dir"/*.java
             echo "::endgroup::"
-          done < <(find java -name '*.java' -printf '%h\n' | sort -u)
+          done < <(find linguagens/java -name '*.java' -printf '%h\n' | sort -u)
 
       - name: Validar C
         shell: bash
@@ -52,7 +52,7 @@ jobs:
             echo "::group::gcc $arquivo"
             gcc -fsyntax-only "$arquivo"
             echo "::endgroup::"
-          done < <(find c -name '*.c' | sort)
+          done < <(find linguagens/c -name '*.c' | sort)
 
       - name: Validar Assembly
         shell: bash
@@ -63,4 +63,4 @@ jobs:
             echo "::group::as $arquivo"
             as -o "$RUNNER_TEMP/$(basename "$arquivo").o" "$arquivo"
             echo "::endgroup::"
-          done < <(find assembly -name '*.asm' | sort)
+          done < <(find linguagens/assembly -name '*.asm' | sort)

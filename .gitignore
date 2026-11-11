@@ -1,8 +1,8 @@
 # Executáveis compilados em C (ficam ao lado do código-fonte)
 entrada/ex*/main
 entrada/ex*/Main
-c/ex*/main
-c/ex*/Main
+linguagens/*/ex*/main
+linguagens/*/ex*/Main
 
 # Java
 *.class
