@@ -11,7 +11,11 @@ linguagens/*/ex*/Main
 __pycache__/
 *.py[cod]
 venv/
-.venv/
+.venv
+.venv-dev/
+.pytest_cache/
+.ruff_cache/
+.coverage
 *.egg-info/
 
 # Node
@@ -44,6 +48,11 @@ desktop.ini
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+secrets.*
 
 # Arquivos temporários
 *.tmp

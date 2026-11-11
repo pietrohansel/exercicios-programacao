@@ -1,7 +1,6 @@
-
-from pathlib import Path
 import re
 import shutil
+from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 ENTRADA = RAIZ / "entrada"
@@ -36,19 +35,48 @@ EXTENSOES = {
     ".s": "assembly",
 }
 
+# Pastas que nunca contêm código do exercício
+PASTAS_IGNORADAS = {
+    "venv",
+    ".venv",
+    ".venv-dev",
+    "node_modules",
+    "__pycache__",
+    ".git",
+    "dist",
+    "build",
+    "target",
+    "bin",
+    "obj",
+}
+
+
+def _ignorado(arquivo, base):
+    """Ignora arquivos dentro de pastas de ambiente/build e arquivos ocultos."""
+    partes = arquivo.relative_to(base).parts
+    return any(
+        parte in PASTAS_IGNORADAS or parte.startswith(".")
+        for parte in partes
+    )
+
 
 def arquivos_de(exercicio):
     """Lista os arquivos de código de uma pasta ou de um arquivo solto."""
     if exercicio.is_file():
         return [exercicio]
 
-    return [arquivo for arquivo in exercicio.rglob("*") if arquivo.is_file()]
+    return [
+        arquivo
+        for arquivo in exercicio.rglob("*")
+        if arquivo.is_file() and not _ignorado(arquivo, exercicio)
+    ]
 
 
 def detectar_linguagem(exercicio):
+    arquivos = arquivos_de(exercicio)
     extensoes = {
         arquivo.suffix.lower()
-        for arquivo in arquivos_de(exercicio)
+        for arquivo in arquivos
         if arquivo.suffix.lower() in EXTENSOES
     }
 
@@ -61,9 +89,15 @@ def detectar_linguagem(exercicio):
         linguagens.add("html-css-js")
 
     if len(linguagens) != 1:
+        nomes = sorted(
+            arquivo.name
+            for arquivo in arquivos
+            if arquivo.suffix.lower() in extensoes
+        )
         raise ValueError(
             f"{exercicio.name}: não foi possível identificar "
-            f"uma única linguagem. Encontradas: {sorted(linguagens)}"
+            f"uma única linguagem. Encontradas: {sorted(linguagens)}. "
+            f"Arquivos: {', '.join(nomes) or 'nenhum'}"
         )
 
     return linguagens.pop()
@@ -82,23 +116,25 @@ def proximo_numero(pasta):
     return max(numeros, default=0) + 1
 
 
-def exercicios_de_entrada():
+def exercicios_de_entrada(entrada):
     """Cada subpasta é um exercício; arquivos soltos de código também.
 
-    Arquivos soltos sem extensão reconhecida (ex.: .gitkeep) são ignorados.
+    Pastas sem nenhum arquivo de extensão reconhecida (ex.: só README.md)
+    são ignoradas em vez de quebrar a organização.
     """
     itens = []
 
-    for item in ENTRADA.iterdir():
+    for item in entrada.iterdir():
         if item.is_symlink() or item.name.startswith("."):
             continue
 
         if item.is_dir():
-            arquivos = [arquivo for arquivo in item.rglob("*") if arquivo.is_file()]
+            tem_codigo = any(
+                arquivo.suffix.lower() in EXTENSOES
+                for arquivo in arquivos_de(item)
+            )
 
-            # Pastas com apenas binários/artefatos sem extensão (ex.: main
-            # compilado) não são exercícios e não devem travar a organização.
-            if any(arquivo.suffix for arquivo in arquivos):
+            if tem_codigo:
                 itens.append(item)
         elif item.suffix.lower() in EXTENSOES:
             itens.append(item)
@@ -106,13 +142,13 @@ def exercicios_de_entrada():
     return sorted(itens, key=lambda item: item.name)
 
 
-def montar_planos(exercicios):
+def montar_planos(exercicios, linguagens):
     """Valida todos os exercícios antes de mover qualquer um."""
     planos = []
 
     for exercicio in exercicios:
         linguagem = detectar_linguagem(exercicio)
-        destino_pai = LINGUAGENS / linguagem
+        destino_pai = linguagens / linguagem
         numero = proximo_numero(destino_pai)
 
         # Reservar números também entre exercícios deste lote.
@@ -133,30 +169,23 @@ def montar_planos(exercicios):
     return planos
 
 
-def main():
-    if not ENTRADA.exists():
-        # O Git não versiona pastas vazias: num clone limpo a pasta pode não
-        # existir, mesmo existindo na máquina local. Isso não é um erro.
-        print("A pasta entrada/ não existe. Nada para organizar.")
-        return
+def organizar(entrada=ENTRADA, raiz=RAIZ):
+    """Move os exercícios de entrada/ para raiz/linguagens/<linguagem>/exNNN.
 
-    exercicios = exercicios_de_entrada()
+    Retorna a lista de (origem, destino) movidos.
+    """
+    if not entrada.exists():
+        return []
+
+    exercicios = exercicios_de_entrada(entrada)
 
     if not exercicios:
-        print("Nenhum exercício novo encontrado.")
-        return
+        return []
 
-    try:
-        planos = montar_planos(exercicios)
-    except (ValueError, FileExistsError) as erro:
-        print(f"ERRO: {erro}")
-        print(
-            "Cada exercício deve ser uma pasta (ou um arquivo solto) com "
-            "código de uma única linguagem. Nada foi movido."
-        )
-        raise SystemExit(1)
+    planos = montar_planos(exercicios, raiz / "linguagens")
+    movidos = []
 
-    for origem, destino_pai, numero, destino in planos:
+    for origem, destino_pai, _numero, destino in planos:
         destino_pai.mkdir(parents=True, exist_ok=True)
 
         if origem.is_dir():
@@ -166,7 +195,31 @@ def main():
             destino.mkdir(parents=True, exist_ok=True)
             shutil.move(str(origem), str(destino / origem.name))
 
-        print(f"{origem.name} -> {destino.relative_to(RAIZ)}")
+        movidos.append((origem, destino))
+        print(f"{origem.name} -> {destino.relative_to(raiz)}")
+
+    return movidos
+
+
+def main():
+    if not ENTRADA.exists():
+        # O Git não versiona pastas vazias: num clone limpo a pasta pode não
+        # existir, mesmo existindo na máquina local. Isso não é um erro.
+        print("A pasta entrada/ não existe. Nada para organizar.")
+        return
+
+    try:
+        movidos = organizar(ENTRADA, RAIZ)
+    except (ValueError, FileExistsError) as erro:
+        print(f"ERRO: {erro}")
+        print(
+            "Cada exercício deve ser uma pasta (ou um arquivo solto) com "
+            "código de uma única linguagem. Nada foi movido."
+        )
+        raise SystemExit(1) from erro
+
+    if not movidos:
+        print("Nenhum exercício novo encontrado.")
 
 
 if __name__ == "__main__":

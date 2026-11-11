@@ -1,4 +1,3 @@
-
 name: Organizar exercicios
 
 on:
@@ -6,6 +5,7 @@ on:
     paths:
       - "entrada/**"
       - "scripts/organizar.py"
+      - "scripts/indice.py"
       - ".github/workflows/organizar.yml"
   workflow_dispatch:
 
@@ -19,21 +19,23 @@ concurrency:
 jobs:
   organizar:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Baixar repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
-          python-version: "3.x"
+          python-version: "3.13"
 
       - name: Organizar exercicios
         shell: bash
         run: |
           set -euo pipefail
           python scripts/organizar.py | tee "$RUNNER_TEMP/organizar.log"
+          python scripts/indice.py
 
       - name: Registrar alteracoes
         shell: bash
@@ -43,7 +45,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -A
+          git add -A -- entrada linguagens
 
           if git diff --cached --quiet; then
             echo "Nenhuma alteracao para registrar."

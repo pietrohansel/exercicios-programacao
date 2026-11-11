@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+        files: ^(scripts|tests)/.*$
+      - id: trailing-whitespace
+        files: ^(scripts|tests)/.*$
+
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff (scripts e testes)
+        entry: ruff
+        language: python
+        additional_dependencies: ["ruff==0.17.4"]
+        args: [check, --fix]
+        files: ^(scripts|tests)/.*\.py$
+
+      - id: commit-msg
+        name: commit-msg (Conventional Commits)
+        entry: .githooks/commit-msg
+        language: script
+        stages: [commit-msg]

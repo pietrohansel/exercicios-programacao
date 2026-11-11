@@ -1,5 +1,7 @@
 # Exercícios de Programação
 
+[![Validar exercicios](https://github.com/pietrohansel/exercicios-programacao/actions/workflows/validar.yml/badge.svg?branch=main)](https://github.com/pietrohansel/exercicios-programacao/actions/workflows/validar.yml)
+
 Repositório com exercícios de programação para praticar lógica e desenvolver habilidades de resolução de problemas.
 
 ## Estrutura
@@ -8,7 +10,11 @@ Repositório com exercícios de programação para praticar lógica e desenvolve
 | --- | --- |
 | `entrada/` | Área de envio. A GitHub Action move os exercícios daqui para a pasta da linguagem correta. |
 | `linguagens/` | Pasta única com uma subpasta por linguagem (`python/`, `java/`, `c/`, ...), cada uma com os exercícios numerados (`ex001`, `ex002`, ...). |
+| `linguagens/README.md` | Índice gerado automaticamente com a contagem de exercícios por linguagem. |
 | `scripts/organizar.py` | Script usado pela Action e para organizar os exercícios localmente. |
+| `scripts/indice.py` | Gera o índice de `linguagens/README.md`. |
+| `tests/` | Testes do script de organização (`pytest`). |
+| `Makefile` | Atalhos para setup, testes, lint, formatação e organização local. |
 | `.github/workflows/` | Actions de organização e de validação do código. |
 
 ## Como adicionar um exercício
@@ -35,10 +41,13 @@ entrada/calculadora.py
 Depois:
 
 ```bash
-git add -A
+git add entrada/
 git commit -m "feat: exercicio calculadora"
 git push
 ```
+
+Use `git add entrada/` (e não `git add -A`) para não incluir arquivos locais
+por engano.
 
 Em alguns segundos o bot move tudo para `linguagens/python/ex001/`,
 `linguagens/java/ex001/`, etc. Para receber o resultado na sua máquina:
@@ -113,21 +122,40 @@ arquivo com o cliente do seu banco de dados.
 O workflow `.github/workflows/validar.yml` roda em pushes e pull requests e
 verifica:
 
+- lint (`ruff`) e testes (`pytest`) do script de organização;
 - sintaxe dos arquivos Python;
 - compilação de cada pasta de exercícios Java;
 - sintaxe dos arquivos C;
 - montagem dos arquivos Assembly.
 
-Assim, erros de sintaxe aparecem no GitHub antes de se espalharem pelo
-repositório.
+Assim, erros aparecem no GitHub antes de se espalharem pelo repositório.
+
+## Desenvolvimento local
+
+Os comandos ficam no `Makefile`:
+
+```bash
+make setup     # cria .venv-dev, instala dependências e ativa os hooks
+make test      # roda os testes do script de organização
+make lint      # ruff nos scripts e testes
+make format    # formata scripts e testes
+make organize  # organiza entrada/ e atualiza o índice, sem depender do GitHub
+```
+
+O `make setup` também configura o template de commit e os hooks de
+`pre-commit` (ruff + validação da mensagem de commit).
 
 ## Segurança e arquivos ignorados
 
 Nunca versione arquivos `.env` nem credenciais. O `.gitignore` já bloqueia
-`.env` e variações (`.env.local`, `.env.production`, etc.); se precisar
-documentar as variáveis usadas, crie um `.env.example` com valores fictícios.
+`.env` e variações (`.env.local`, `.env.production`, etc.), chaves (`*.pem`,
+`*.key`), `credentials.json` e `secrets.*`; se precisar documentar as variáveis
+usadas, crie um `.env.example` com valores fictícios.
 
-O `.gitignore` também cobre binários compilados, `__pycache__`, ambientes
+O repositório também conta com **secret scanning** e **push protection** do
+GitHub: um segredo conhecido é bloqueado antes de entrar no histórico.
+
+O `.gitignore` cobre ainda binários compilados, `__pycache__`, ambientes
 virtuais, `node_modules`, pastas de build e arquivos de IDE/sistema.
 
 ## Padrão de commits
@@ -151,19 +179,19 @@ git commit -m "chore: atualiza .gitignore"
 
 ### Template e validação no seu clone
 
-O repositório inclui um template em `.gitmessage` e um hook de validação em
-`.githooks/commit-msg`. Ative-os uma vez em cada clone:
+O repositório inclui um template em `.gitmessage`, um hook de validação em
+`.githooks/commit-msg` e um `pre-commit` com `ruff`. Ative tudo com:
 
 ```bash
-git config commit.template .gitmessage
-git config core.hooksPath .githooks
+make setup
 ```
 
 Depois disso:
 
 - `git commit` sem `-m` abre o editor já com o template;
 - mensagens fora do padrão são recusadas;
-- o assunto deve ter no máximo 72 caracteres.
+- o assunto deve ter no máximo 72 caracteres;
+- o `ruff` roda automaticamente nos arquivos de `scripts/` e `tests/`.
 
 Para ignorar a validação em uma emergência, use `git commit --no-verify`.
 
