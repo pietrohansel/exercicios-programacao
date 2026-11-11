@@ -1,0 +1,9 @@
+# Nunca versionar credenciais reais
+.env
+
+# Ambiente virtual e artefatos gerados
+venv/
+.venv
+__pycache__/
+*.py[cod]
+*.log
