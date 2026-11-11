@@ -2,9 +2,21 @@
 
 [![Validar exercicios](https://github.com/pietrohansel/exercicios-programacao/actions/workflows/validar.yml/badge.svg?branch=main)](https://github.com/pietrohansel/exercicios-programacao/actions/workflows/validar.yml)
 
-Ao estudar programação, seja por meio de um curso técnico, faculdade ou cursos avulsos, uma coisa é certa: você fará muitos exercícios e desenvolverá diversos projetos.
+Este é um **repositório automatizado** para guardar os exercícios e pequenos
+projetos que faço enquanto estudo programação — em curso técnico, faculdade,
+cursos avulsos ou simplesmente praticando por conta própria.
 
-Mas por que guardar tudo em um repositório comum, sem organização, se você pode utilizar um repositório planejado para estruturar, organizar e facilitar o acesso a cada exercício e projeto?
+Ao estudar programação, uma coisa é certa: você fará muitos exercícios e
+desenvolverá diversos projetos. A ideia aqui é não espalhar isso em pastas
+soltas. Cada exercício entra numa área de envio (`entrada/`) e um bot do GitHub
+se encarrega de organizar, numerar e guardar tudo na pasta da linguagem certa.
+O acervo cresce sem virar bagunça e fica fácil reencontrar um exercício depois.
+
+O que acontece automaticamente a cada push:
+
+- o exercício sai de `entrada/` e vai para `linguagens/<linguagem>/exNNN`;
+- o índice `linguagens/README.md` é regerado com a contagem por linguagem;
+- o código é validado (lint, testes, sintaxe e compilação) antes de entrar.
 
 ## Estrutura
 
@@ -40,16 +52,17 @@ entrada/cartao-visita/
 entrada/calculadora.py
 ```
 
-Depois:
+Depois é só commitar e dar push:
 
 ```bash
-git add entrada/
-git commit -m "feat: exercicio calculadora"
+git add entrada/calculadora
+git commit -m "feat: adiciona exercício de calculadora"
 git push
 ```
 
-Use `git add entrada/` (e não `git add -A`) para não incluir arquivos locais
-por engano.
+Use o caminho específico do exercício (e não `git add -A`) para não incluir
+arquivos locais por engano. O passo a passo completo, os tipos de commit e os
+erros mais comuns estão em [Padrão de commits](#padrão-de-commits).
 
 Em alguns segundos o bot move tudo para `linguagens/python/ex001/`,
 `linguagens/java/ex001/`, etc. Para receber o resultado na sua máquina:
@@ -162,27 +175,117 @@ virtuais, `node_modules`, pastas de build e arquivos de IDE/sistema.
 
 ## Padrão de commits
 
-O repositório usa o formato **Conventional Commits**:
+Toda mensagem segue o formato **Conventional Commits**:
 
 ```text
 <tipo>: <descrição curta>
 ```
 
-Tipos aceitos: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
-`build`, `ci`, `chore` e `revert`.
+- `tipo` é uma palavra fixa, em minúsculas: `feat`, `fix`, `docs`, `style`,
+  `refactor`, `perf`, `test`, `build`, `ci`, `chore` ou `revert`;
+- depois do tipo vêm dois-pontos e **um espaço**;
+- a descrição não pode ser vazia, e o assunto inteiro deve ter **até 72
+  caracteres**;
+- o escopo é opcional, em minúsculas e sem espaço: `docs(readme): ...`;
+- acentos e `ç` são permitidos na descrição.
 
-Exemplos:
+### Qual tipo usar
+
+| O que você fez | Tipo | Exemplo |
+| --- | --- | --- |
+| Novo exercício ou projeto | `feat` | `feat: adiciona exercício de calculadora` |
+| Correção de bug no código | `fix` | `fix: corrige leitura de entrada do exercício 12` |
+| README, comentários, documentação | `docs` | `docs: revisa a introdução do README` |
+| Formatação, sem mudar lógica | `style` | `style: formata scripts com ruff` |
+| Reorganização sem mudar comportamento | `refactor` | `refactor: separa organizar em funções` |
+| Testes novos ou ajustados | `test` | `test: cobre pasta sem código` |
+| Dependências e build | `build` | `build: atualiza requirements-dev` |
+| Workflows, Dependabot, Actions | `ci` | `ci: adiciona lint e testes` |
+| Tarefas gerais (`.gitignore`, mover pastas) | `chore` | `chore: atualiza .gitignore` |
+| Reversão de um commit anterior | `revert` | `revert: desfaz commit de organização` |
+
+### Fazendo um commit (passo a passo)
+
+**Adicionar um exercício** — o caso mais comum:
 
 ```bash
+mkdir -p entrada/calculadora
+$EDITOR entrada/calculadora/calculadora.py
+
+git status --short                  # confere o que vai entrar
+git add entrada/calculadora         # caminho específico, não "git add -A"
 git commit -m "feat: adiciona exercício de calculadora"
-git commit -m "fix: corrige leitura de entrada do exercício 12"
-git commit -m "chore: atualiza .gitignore"
+git push
 ```
+
+Depois do push a Action move a pasta para `linguagens/python/exNNN` e cria o
+commit dela sozinha. Você não precisa numerar nem mover nada à mão.
+
+**Mexer em script, documentação ou CI:**
+
+```bash
+git add scripts/organizar.py tests/test_organizar.py
+git commit -m "fix: ignora venv na detecção de linguagem"
+git push
+```
+
+**Com corpo explicando o porquê:**
+
+```bash
+git commit -m "refactor: separa organizar em funções" \
+           -m "Permite testar sem tocar em arquivos reais."
+```
+
+**Pelo editor, usando o template:**
+
+```bash
+git add <arquivos>
+git commit
+```
+
+O editor abre o `.gitmessage`. Apague as linhas `#` e escreva o assunto **na
+primeira linha**:
+
+```text
+docs: revisa a introdução do README
+
+Explica por que o repositório é organizado por linguagem.
+```
+
+Se salvar o arquivo apenas com as linhas de comentário, nada é commitado: o
+hook recusa com `Mensagem de commit inválida` e o commit não chega a existir.
+Nesse caso o `git push` responde `Everything up-to-date` e parece que o push
+falhou, quando na verdade não havia nada para enviar.
+
+### Antes de dar push
+
+```bash
+git status -sb            # "ahead 1" = o commit existe
+git log --oneline -1      # a mensagem saiu como você queria?
+make lint && make test    # apenas se mexeu em scripts/ ou tests/
+```
+
+Se aparecer `nothing to commit, working tree clean` e `main...origin/main` sem
+`[à frente N]`, não há nada para enviar.
+
+### Erros comuns
+
+| Saída | Causa | O que fazer |
+| --- | --- | --- |
+| `Mensagem de commit inválida` | assunto vazio ou sem `tipo:` | refaça o commit com mensagem válida |
+| `O assunto do commit tem N caracteres` | passou de 72 | resuma ou detalhe no corpo |
+| `Everything up-to-date` no push | o commit não foi criado | `git status` e refaça o commit |
+| `Cannot force-push to a protected branch` | `--amend` ou `--force` em commit já enviado | faça um commit novo |
+| `ruff` failed | erro de lint em `scripts/` ou `tests/` | `make lint`, corrija e `git add` de novo |
+
+A branch `main` é protegida contra deleção e force-push, mas aceita pushes
+normais.
 
 ### Template e validação no seu clone
 
 O repositório inclui um template em `.gitmessage`, um hook de validação em
-`.githooks/commit-msg` e um `pre-commit` com `ruff`. Ative tudo com:
+`.githooks/commit-msg` e um `pre-commit` (`ruff`, YAML e conflitos de merge).
+Ative tudo com:
 
 ```bash
 make setup
@@ -195,7 +298,9 @@ Depois disso:
 - o assunto deve ter no máximo 72 caracteres;
 - o `ruff` roda automaticamente nos arquivos de `scripts/` e `tests/`.
 
-Para ignorar a validação em uma emergência, use `git commit --no-verify`.
+Se o hook reclamar de lint, rode `make lint` e `make format`, adicione as
+correções e repita o commit. Para ignorar a validação em uma emergência, use
+`git commit --no-verify` — mas isso pula o `ruff` junto.
 
 ## Licença
 
