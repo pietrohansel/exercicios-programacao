@@ -2,7 +2,9 @@
 
 [![Validar exercicios](https://github.com/pietrohansel/exercicios-programacao/actions/workflows/validar.yml/badge.svg?branch=main)](https://github.com/pietrohansel/exercicios-programacao/actions/workflows/validar.yml)
 
-Repositório com exercícios de programação para praticar lógica e desenvolver habilidades de resolução de problemas.
+Ao estudar programação, seja por meio de um curso técnico, faculdade ou cursos avulsos, uma coisa é certa: você fará muitos exercícios e desenvolverá diversos projetos.
+
+Mas por que guardar tudo em um repositório comum, sem organização, se você pode utilizar um repositório planejado para estruturar, organizar e facilitar o acesso a cada exercício e projeto?
 
 ## Estrutura
 
