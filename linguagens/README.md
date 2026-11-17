@@ -9,7 +9,7 @@
 | [html-css-js](html-css-js/) | 11 |
 | [java](java/) | 43 |
 | [javascript](javascript/) | 2 |
-| [python](python/) | 178 |
+| [python](python/) | 182 |
 | [sql](sql/) | 1 |
 
-**Total:** 256 exercícios.
+**Total:** 260 exercícios.
